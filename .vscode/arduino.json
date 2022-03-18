@@ -1,0 +1,6 @@
+{
+    "configuration": "cpu=atmega328old",
+    "board": "arduino:avr:nano",
+    "sketch": "ard-sensorbox-project/ard-sensorbox-project.ino",
+    "port": "/dev/ttyUSB0"
+}

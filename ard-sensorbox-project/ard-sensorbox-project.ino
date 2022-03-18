@@ -5,6 +5,13 @@
 #define DHTPIN 2
 #define DHTTYPE DHT11
 
+int autoMode = 1;
+
+int modeDelay = 1000;
+
+float temp = 0;
+float humi = 0;
+
 LiquidCrystal_I2C lcd(0x27, 16, 2); // I2C address 0x27, 16 column and 2 rows
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -15,9 +22,9 @@ byte charDegr[8] = {
   0b00110,
   0b01001,
   0b01000,
-  0b01000,
   0b01001,
-  0b00110
+  0b00110,
+  0b00000
 };
 
 byte charAuto[8] = {
@@ -42,6 +49,17 @@ byte charLeft0[8] = {
   0b01000
 };
 
+byte charRight0[8] = {
+  0b00010,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00001,
+  0b00010
+};
+
 // Modes
 // 0: Initializing
 // 1: Temperature
@@ -56,34 +74,31 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  lcd.setCursor(0, 0);
-  lcd.print("Temp: ");
-  lcd.setCursor(0, 1);
-  lcd.print("Humi: ");
-
   lcd.createChar(0, charAuto);
   lcd.createChar(1, charDegr);
   lcd.createChar(2, charLeft0);
+  lcd.createChar(3, charRight0);
   
-  dht.begin();
+  mode0();
 }
 
 void loop() {
-  float humi = dht.readHumidity();
-  float temp = dht.readTemperature();
+  if (modeDelay < 0) {
+    mode += 1;
 
-  lcd.setCursor(6, 0);
-  lcd.print((int)temp);
-  lcd.setCursor(8, 0);
-  lcd.write((byte)1);
-
-  lcd.setCursor(6, 1);
-  lcd.print((int)humi);
-  lcd.setCursor(8, 1);
-  lcd.print("%");
-
-  lcd.setCursor(15, 0);
-  lcd.write((byte)2);
+    modeDelay = 1000;
   
-  delay(2000);
+    if (mode == 1)
+      mode1();
+    else if (mode == 2)
+      mode2();
+    else
+      mode = 1;
+
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.print(mode);
+
+  modeDelay--;
 }
