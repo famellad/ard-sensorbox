@@ -5,9 +5,11 @@
 #define DHTPIN 2
 #define DHTTYPE DHT11
 
+#define MAX_MD 2500;
+
 int autoMode = 1;
 
-int modeDelay = 1000;
+int modeDelay = 0;
 
 float temp = 0;
 float humi = 0;
@@ -36,6 +38,39 @@ byte charAuto[8] = {
   0b11100,
   0b01001,
   0b00110
+};
+
+byte charTemp[8] = {
+  0b10110,
+  0b00110,
+  0b10110,
+  0b00110,
+  0b10110,
+  0b01111,
+  0b01111,
+  0b00110
+};
+
+byte charHumi[8] = {
+  0b00100,
+  0b00100,
+  0b01110,
+  0b01110,
+  0b11001,
+  0b11101,
+  0b11111,
+  0b01110
+};
+
+byte charPM25[8] = {
+  0b10000,
+  0b00110,
+  0b00110,
+  0b00000,
+  0b11001,
+  0b11000,
+  0b00011,
+  0b01011
 };
 
 byte charLeft0[8] = {
@@ -76,29 +111,33 @@ void setup() {
 
   lcd.createChar(0, charAuto);
   lcd.createChar(1, charDegr);
-  lcd.createChar(2, charLeft0);
-  lcd.createChar(3, charRight0);
+  
+  lcd.createChar(2, charTemp);
+  lcd.createChar(3, charHumi);
+  lcd.createChar(4, charPM25);
+  
+  lcd.createChar(5, charLeft0);
+  lcd.createChar(6, charRight0);
   
   mode0();
 }
 
 void loop() {
-  if (modeDelay < 0) {
-    mode += 1;
-
-    modeDelay = 1000;
-  
-    if (mode == 1)
+  if (modeDelay <= 0) {
+    if (mode == 1) {
       mode1();
-    else if (mode == 2)
+      mode++;
+      modeDelay = MAX_MD;
+    }
+    else if (mode == 2) {
       mode2();
+      mode++;
+      modeDelay = MAX_MD;
+    }
     else
       mode = 1;
-
   }
-
-  lcd.setCursor(0, 1);
-  lcd.print(mode);
-
+  
+  delay(1);
   modeDelay--;
 }

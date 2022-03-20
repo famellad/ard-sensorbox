@@ -6,7 +6,9 @@ void mode0 () {
     lcd.print("Initializing...");
     float humi = dht.readHumidity();
     float temp = dht.readTemperature();
-    lcd.clear();
 
+    delay(1000);
+    
+    lcd.clear();
     mode = 1;
 }
